@@ -1,0 +1,5 @@
+from one.api import One
+from pathlib import Path
+one = One.setup(cache_dir="/Users/liamk/Documents/Python Scripts/Plotting/allData/")
+ids = one.search(dataset=['trials.intervals.npy',])
+print(f'There are {ids} sessions for subject')

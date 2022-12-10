@@ -1,0 +1,59 @@
+from time import time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+spikes = np.load('./allData/Cori_2016-12-14/spikes.times.npy')
+amps = np.load('./allData/Cori_2016-12-14/spikes.amps.npy')
+
+# print(pd.DataFrame(amps).shape)
+# print(pd.DataFrame(spikes).shape)
+
+# print(pd.DataFrame(spikes)[:-10])
+# print(pd.DataFrame(amps)[:-10])
+
+#print(spikes)
+
+#print(pd.DataFrame(spikes).shape)
+fig = plt.figure()
+
+plot_range = 0, 10000
+
+
+#Average values over a sample size, bin_size in milliseconds
+#x is the time values
+#y is the actual values to be binned
+def bin_values(bin_size, x, y, rangeMin, rangeMax):
+    time_elapsed = 0 #milliseconds
+    current_bin = []
+    binned_values = []
+    counter = 0
+    for i in range(rangeMin, rangeMax):
+        time_elapsed += x[i] - (x[i-1] if i-1 >= 0 else 0)
+        print(x[i - ((counter) if len(binned_values) >=1 else 0)])
+        print('time_elapsed: ' + str(time_elapsed))
+        current_bin.append((x[i][0], y[i][0]))
+        print(current_bin[i - ((counter) if len(binned_values) >=1 else 0)])
+        if time_elapsed >= bin_size:
+            xBin = sum(list(zip(*current_bin))[0]) / len(current_bin)
+            yBin = sum(list(zip(*current_bin))[1]) / len(current_bin)
+
+            print('XBIN: ' + str(xBin))
+            print('YBIN: ' + str(yBin))
+            
+            binned_values.append((xBin, yBin))
+            print(str(len(binned_values)))
+            time_elapsed = 0
+            current_bin.clear()
+        counter += 1
+    return binned_values
+
+bin_size=0.005
+binned = bin_values(bin_size, spikes, amps, plot_range[0], plot_range[1])
+print(len(binned))
+print(binned)
+plt.subplot(111)
+#plt.plot(spikes[:plot_range[1]], amps[:plot_range[1]])
+plt.bar(list(zip(*binned))[0], list(zip(*binned))[1], edgecolor="black", width=bin_size)
+#for i in range(plt.xlim / bin_size):
+    #plt.axvline(x=bin_size * 20 * i)
+plt.show()

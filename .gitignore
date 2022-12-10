@@ -1,0 +1,4 @@
+/.venv
+/allData
+*.pqt
+/.DS_Store
