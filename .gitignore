@@ -2,3 +2,5 @@
 /allData
 *.pqt
 /.DS_Store
+*.csv
+*.zip
