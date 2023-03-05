@@ -1,7 +1,7 @@
 function splitByDecision()
 
-rootDir = uigetdir(pwd, 'Select folder containing the downloaded sessions');
-
+%rootDir = uigetdir(pwd, 'Select folder containing the downloaded sessions');
+rootDir = './allData';
     if ~isempty(rootDir)
         d = dir(fullfile(rootDir, '*')); 
         d = d([d.isdir]); 
@@ -29,7 +29,7 @@ rootDir = uigetdir(pwd, 'Select folder containing the downloaded sessions');
             outcomes = s.trials.response_choice;
             contLeft = s.trials.visualStim_contrastLeft;
             contRight = s.trials.visualStim_contrastRight;
-            spikeTimes = s.spikes.amps;
+            spikeTimes = s.spikes.times;
 
             CORRECT_COLOUR = [0.1 1 0.1];
             WRONG_COLOUR = [1 0.1 0.1];
@@ -64,6 +64,8 @@ rootDir = uigetdir(pwd, 'Select folder containing the downloaded sessions');
             %background with red or green to show trial over neuron
             %activity.
             for i = 1:size(intervals, 1)
+                % Is the left contrast higher than the right?
+                % This would make a right turn the correct one. And etc.
                 if contLeft(i) > contRight(i)
                     correct = 1;
                 elseif contLeft(i) < contRight(i)
@@ -71,12 +73,17 @@ rootDir = uigetdir(pwd, 'Select folder containing the downloaded sessions');
                 elseif contLeft(i) == contRight(i)
                     correct = 0;
                 end
+                % If correct, paint a green square, otherwise do red.
+                % Width of a square represent the trial length.
                 if correct == outcomes(i)                    
                     patch([intervals(i,1) intervals(i,1) intervals(i,2) intervals(i,2)], [0 max(plottableSpikes) max(plottableSpikes) 0], CORRECT_COLOUR);
+                    % Counting the spikes during this trial
+                    % Needs refining into calculating the firing rate.
                     count = length(plottableSpikes(intervals(i,1):intervals(i,2)));
                     trials = [trials; count 1;];
                 else
                     patch([intervals(i,1) intervals(i,1) intervals(i,2) intervals(i,2)], [0 max(plottableSpikes) max(plottableSpikes) 0], WRONG_COLOUR);
+                    % Same as above
                     count = length(plottableSpikes(intervals(i,1):intervals(i,2)));
                     trials = [trials; count 0;];
                 end

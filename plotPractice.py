@@ -167,7 +167,8 @@ class Wheel:
 #Example usage
 
 #Create a mouse object, input the name of the mouse
-mouse_name = "Moniz_2017-05-15"
+#mouse_name = "Moniz_2017-05-15"
+mouse_name = "Cori_2016-12-14"
 mouse = Mouse(mouse_name)
 
 #Create a dictionary of the time range to plot for easy syncing of data timestamps
@@ -179,37 +180,40 @@ time_range = {
 #Timestamps not synced yet, so we take the first x values instead
 num_values = 2000
 
-fig, ax = plt.subplots()
+print(mouse.trials.intervals)
+print(max(mouse.spikes.times))
+
+#fig, ax = plt.subplots()
 
 #Print the first 100 trial intervals,
 #This tells us how long each trial was in seconds
 #print(mouse.trials.intervals[:100])
 
 #Count the timestamps in each bin of 0.005 seconds
-fr = mouse.count_timestamps_in_bins(mouse.spikes.times[:num_values], 0.005)
-keys, values = np.array(list(fr.keys())), np.array(list(fr.values()))
-#print(values, keys)
+# fr = mouse.count_timestamps_in_bins(mouse.spikes.times[:num_values], 0.005)
+# keys, values = np.array(list(fr.keys())), np.array(list(fr.values()))
+# #print(values, keys)
 
-#Setup bar chart
-ax.bar(keys, values, width=0.005, edgecolor='black', linewidth=0.5)
-ax.plot(keys, values, color='red', linewidth=0.5)
+# #Setup bar chart
+# ax.bar(keys, values, width=0.005, edgecolor='black', linewidth=0.5)
+# ax.plot(keys, values, color='red', linewidth=0.5)
 
-#Make bar chart look nice
-ax.grid(visible=True, linestyle='--')
-ax.set_xlabel('Time (s)')
-ax.set_ylabel('Firing Rate (mHz)')
+# #Make bar chart look nice
+# ax.grid(visible=True, linestyle='--')
+# ax.set_xlabel('Time (s)')
+# ax.set_ylabel('Firing Rate (mHz)')
 
-#Set plot title
-ax.set_title("Firing Rate of " + mouse_name + "'s first "+ str(num_values) +" spikes")
-plt.xticks(rotation=45)
-plt.style.use('ggplot')
+# #Set plot title
+# ax.set_title("Firing Rate of " + mouse_name + "'s first "+ str(num_values) +" spikes")
+# plt.xticks(rotation=45)
+# plt.style.use('ggplot')
 
-#Old attempt
-# firing_rates = mouse.bin_time_series(0.005, mouse.spikes.times, 100000)
-# print(firing_rates.value_counts())
-# print(firing_rates[:50])
-# plt.plot(firing_rates)
+# #Old attempt
+# # firing_rates = mouse.bin_time_series(0.005, mouse.spikes.times, 100000)
+# # print(firing_rates.value_counts())
+# # print(firing_rates[:50])
+# # plt.plot(firing_rates)
 
-#Show the plot
-plt.show()
+# #Show the plot
+# plt.show()
 

@@ -1,7 +1,3 @@
-
-
-
-
 function eventRasters(s, nProbe)
 % Wrapper for evRastersGUI from /cortex-lab/spikes
 %
@@ -77,7 +73,7 @@ upperBorder = upperBorder'; lowerBorder = lowerBorder'; acronym = acronym';
 anatData.borders = table(upperBorder, lowerBorder, acronym);
 
 pkCh = s.clusters.peakChannel(s.clusters.probes==nProbe-1);
-[~,ii] = sort(pkCh); 
+[~,ii] = sort(pkCh);
 anatData.clusterIDs = inclCID(ii); 
 anatData.wfLoc = anatData.wfLoc(ii,:); 
 anatData.waveforms = anatData.waveforms(ii,:,:);
