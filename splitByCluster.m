@@ -2,6 +2,8 @@
 %%number - saved in files in the 'processed' folder with session name in
 %%the file.
 
+%%% IMPORTANT - GENERATES TIME MATRIX;
+
 function splitByLocation()
 %rootDir = uigetdir(pwd, 'Select folder containing the downloaded sessions');
 rootDir = './allData';
