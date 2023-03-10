@@ -1,10 +1,11 @@
 spikesMat = load(uigetfile('*.mat', 'Pick a processed TimeMatrix file...', './processed/')).timeMatrix;
 
 %List of cluster numbers we want to plot firing rates for.
-clusterNums = [472, 563]; %282 is a longer vector for comparison
-
-
-binSize = 0.005; %5ms
+%clusterNums = [472, 563]; %282 is a longer vector for comparison
+%clusterNums = 1:10;
+%clusterNums = 465:480;
+clusterNums = 472;
+binSize = 0.020; %5ms
 
 startCol = 1;
 endCol = 200;
@@ -40,6 +41,7 @@ hold off;
 
 % Load decisions
 figure(2);
+
 rootDir = './allData';
 if ~isempty(rootDir)
     d = dir(fullfile(rootDir, '*')); 
@@ -52,6 +54,12 @@ if ~isempty(rootDir)
         
         % load session 
         s = loadSession(fullfile(rootDir, sessionNames{indx}));
+
+        for i = 1:size(s.clusters.depths)
+            train = spikesMat(i, :);
+            plot(train)
+            hold on;
+        end
     end
 end
 
