@@ -4,6 +4,7 @@ spikesMat = load(uigetfile('*.mat', 'Pick a processed TimeMatrix file...', './pr
 % timebin=0.005; % In seconds
 % for i=1:length(vv)
 
+spikesMat = spikesMat(1:10, :);
 
 figure
 % for i  = 1:size(spikesMat,1)
@@ -11,12 +12,16 @@ figure
 %     plot(i, numSpikes, '*')
 %     hold on;
 % end
-
-maxVal = max(spikesMat(1, :), [], 'all')
+grid on;
+maxVal = max(spikesMat, [], 'all')
 
 xlim([0 maxVal]);
-ylim([0 10]);
-numSpikes = size(spikesMat,2) - sum(isnan(spikesMat(1,:)));
-for i = 1:numSpikes
-    line(spikesMat(1, i), [0 10]);
+ylim([0 size(spikesMat, 1) + 1]);
+
+for j = 1:size(spikesMat, 1)
+    numSpikes = size(spikesMat,2) - sum(isnan(spikesMat(j,:)))
+    for i = 1:numSpikes
+        line([spikesMat(j, i), spikesMat(j, i)], [j j+1]);
+        hold on;
+    end
 end
