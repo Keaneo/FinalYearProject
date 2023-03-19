@@ -21,13 +21,16 @@ spikesMat = spikesMat(1:10, :);
 figure
 % USEFUL - Plot the count of spikes for each cluster
 % Good for looking at active vs inactive neurons
-%
-% for i  = 1:size(spikesMat,1)
-%     numSpikes = size(spikesMat,2) - sum(isnan(spikesMat(i,:)));
-%     plot(i, numSpikes, '*')
-%     hold on;
-% end
 
+for i  = 1:size(spikesMat,1)
+    numSpikes = size(spikesMat,2) - sum(isnan(spikesMat(i,:)));
+    plot(i, numSpikes, '*')
+    hold on;
+end
+set(gca,'XDir','reverse');
+camroll(-90)
+
+figure(2)
 %Turn on grid and get the max time value from the matrix
 grid on;
 maxVal = max(spikesMat, [], 'all')
