@@ -54,6 +54,7 @@ contRight = s.trials.visualStim_contrastRight;
 outcomes = s.trials.response_choice;
 intervals = s.trials.intervals;
 stimOn = s.trials.visualStim_times;
+probes = s.clusters.probes;
 CORRECT_COLOUR = [0.1 1 0.1];
 WRONG_COLOUR = [1 0.1 0.1];
 
