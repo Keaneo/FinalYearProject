@@ -28,21 +28,21 @@ cluster_peakChannel = s.clusters.peakChannel;
 unique_clusters = unique(spike_clusters);
 
 % Get unique brain regions
-unique_brain_regions = unique(clusters_brainLocation.allen_ontology, 'rows');
+unique_brain_regions = cellstr(unique(clusters_brainLocation.allen_ontology, 'rows'));
 
 % Initialize a structure to store spike times organized by brain region
 brain_region_spike_times = struct();
 
 % Iterate over brain regions
 for region_idx = 1:numel(unique_brain_regions)
-    region = unique_brain_regions(region_idx);
+    region = unique_brain_regions{region_idx};
     region_spike_times = {};
 
     % Iterate over unique clusters
     for cluster_idx = 1:numel(unique_clusters)
         cluster_id = unique_clusters(cluster_idx);
         peak_channel = cluster_peakChannel(cluster_idx);
-        cluster_brain_region = clusters_brainLocation.allen_ontology(peak_channel);
+        cluster_brain_region = clusters_brainLocation.allen_ontology(peak_channel, :);
 
         % Check if cluster's brain region matches the current region
         if strcmp(region, cluster_brain_region)
@@ -55,7 +55,7 @@ for region_idx = 1:numel(unique_brain_regions)
     end
 
     % Replace any non-alphanumeric characters with underscores
-    valid_field_name = ['r', regexprep(region, '[^a-zA-Z0-9]', '_')];
+    valid_field_name = regexprep(region, '[^a-zA-Z0-9]', '_');
 
 
     % Store region_spike_times in the brain_region_spike_times structure
