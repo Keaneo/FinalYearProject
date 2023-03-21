@@ -86,34 +86,25 @@ else
 end
 %===========
 
-% Initialize an empty matrix to store line data
-line_data = [];
-
-% Iterate through all the fields in the "region" struct
-field_names = fieldnames(region);
-for k = 1:numel(field_names)
-    % Get the cluster struct from "region"
-    cluster_struct = region.(field_names{k});
-
-    % Iterate through all the named vectors in the current cluster struct
-    cluster_field_names = fieldnames(cluster_struct);
-    for j = 1:numel(cluster_field_names)
+for k = 1:size(region, 1)
+    % Get the cluster cell array from "region"
+    cluster_cell_array = region(k, 2;
+    
+    % Iterate through all the named vectors in the current cluster cell array
+    for j = 1:size(cluster_cell_array, 1)
         % Get the named vector
-        cluster_name = cluster_field_names{j};
-        cluster_vector = cluster_struct.(cluster_name);
-
+        cluster_name = cluster_cell_array{j, 1};
+        cluster_vector = cluster_cell_array{j, 2};
+        
         % Iterate through all the elements in the named vector
         num_elements = numel(cluster_vector);
         for i = 1:num_elements
-            % Store the line data for each element in the named vector
-            line_data = [line_data; cluster_vector(i) j j+1];
+            % Plot a vertical line for each element in the named vector
+            line([cluster_vector(i), cluster_vector(i)], [j j+1]);
+            hold on;
         end
     end
 end
-
-% Plot all lines at once using the plot function
-plot([line_data(:, 1) line_data(:, 1)]', [line_data(:, 2) line_data(:, 3)]', 'k-');
-hold on;
 
 % Customize the plot appearance (optional)
 xlabel('Value');
