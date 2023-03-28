@@ -102,7 +102,7 @@ end
 line_data = [];
 
 % Set range of times to plot
-start_time = 10;
+start_time = 0;
 end_time = 20;
 
 % Iterate through all the fields in the "region" struct
@@ -129,14 +129,20 @@ for k = 1:numel(field_names)
     
 end
 
-for j = 1:numel(s.trials.goCue_times)
-    
-end
+
+
 
 % Plot all lines at once using the plot function
 plot([line_data(:, 1) line_data(:, 1)]', [line_data(:, 2) line_data(:, 3)]', 'k-');
 hold on;
 
+
+
+for j = 1:numel(s.trials.goCue_times)
+    if(s.trials.goCue_times(j) >= start_time && s.trials.goCue_times(j) <= end_time)
+        line([s.trials.goCue_times(j) s.trials.goCue_times(j)], [0 max(max(line_data, [], 2))]);
+    end
+end
 % Customize the plot appearance (optional)
 xlabel('Time (s)');
 ylabel('Cluster Number');

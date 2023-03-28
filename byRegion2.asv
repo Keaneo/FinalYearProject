@@ -38,16 +38,17 @@ unique_clusters = unique(spike_clusters);
 % Get unique brain regions
 unique_brain_regions = unique(anatData.borders.acronym);
 
-% Initialize a structure to store spike times organized by brain region
-brain_region_spike_times = struct();
+
 
 % Check if spikes have been sorted, if not, sort them
 filename = strcat('processed/spike_times_by_region', sessionNames{indx} ,'.mat');
 if exist(filename, 'file') == 2
-    fprintf('Spikes already sorted by region');
-    brain_region_spike_times = load()
+    fprintf('Spikes already sorted by region\n');
+    load(filename);
 else
-    fprintf('Spikes not sorted, sorting...');
+    fprintf('Spikes not sorted, sorting...\n');
+    % Initialize a structure to store spike times organized by brain region
+    brain_region_spike_times = struct();
     % SORT SPIKES BY REGION
     % Iterate over brain regions
     for region_idx = 1:numel(unique_brain_regions)
@@ -84,6 +85,7 @@ else
         brain_region_spike_times.(valid_field_name) = region_spike_data;
         save(strcat('processed/spike_times_by_region', sessionNames{indx} ,'.mat'), "brain_region_spike_times");
     end
+    fprintf('Spikes Sorted!');
 end
 
 %===========
@@ -92,7 +94,7 @@ if isfield(brain_region_spike_times, region_name)
     % Get the corresponding struct
     region = brain_region_spike_times.(region_name);
 else
-    error('The specified region_name was not found in the brain_regions struct.');
+    error('The specified region_name was not found in the brain_region_spike_times struct.');
 end
 %===========
 
@@ -100,8 +102,8 @@ end
 line_data = [];
 
 % Set range of times to plot
-start_time = 0;
-end_time = 10;
+start_time = 60;
+end_time = 70;
 
 % Iterate through all the fields in the "region" struct
 field_names = fieldnames(region);
@@ -127,18 +129,24 @@ for k = 1:numel(field_names)
     
 end
 
-for j = 1:numel(s.trials.goCue_times)
-    
-end
+
+
 
 % Plot all lines at once using the plot function
 plot([line_data(:, 1) line_data(:, 1)]', [line_data(:, 2) line_data(:, 3)]', 'k-');
 hold on;
 
+
+
+for j = 1:numel(s.trials.goCue_times)
+    if(s.trials.goCue_times(j) >= start_time && s.trials.goCue_times(j) <= end_time)
+        line([s.trials.goCue_times(j) s.trials.goCue_times(j)], [0 max(line_data())]);
+    end
+end
 % Customize the plot appearance (optional)
-xlabel('Value');
-ylabel('Cluster');
-title('Named Vectors Plot');
+xlabel('Time (s)');
+ylabel('Cluster Number');
+title(strcat("Spike Times in ", region_name));
 grid on;
 
 % Release the hold on the plot
