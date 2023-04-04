@@ -102,8 +102,8 @@ end
 line_data = [];
 
 % Set range of times to plot
-start_time = 0;
-end_time = 20;
+start_time = 65;
+end_time = 75;
 
 % Iterate through all the fields in the "region" struct
 field_names = fieldnames(region);
@@ -140,10 +140,26 @@ hold on;
 
 for j = 1:numel(s.trials.goCue_times)
     if(s.trials.goCue_times(j) >= start_time && s.trials.goCue_times(j) <= end_time)
-        line([s.trials.goCue_times(j) s.trials.goCue_times(j)], [0 max(max(line_data, [], 2))]);
+        line([s.trials.goCue_times(j) s.trials.goCue_times(j)], [0 max(max(line_data, [], 2))], 'DisplayName', 'Go Cue');
     end
 end
-% Customize the plot appearance (optional)
+
+for j = 1:numel(s.trials.visualStim_times)
+    if(s.trials.visualStim_times(j) >= start_time && s.trials.visualStim_times(j) <= end_time)
+        line([s.trials.visualStim_times(j) s.trials.visualStim_times(j)], [0 max(max(line_data, [], 2))], 'Color', [0 0.8 0], 'DisplayName', '');
+    end
+end
+
+for j = 1:numel(s.trials.intervals)
+    if(s.trials.intervals(j, 1) >= start_time && s.trials.intervals(j, 1) <= end_time)
+        line([s.trials.intervals(j, 1) s.trials.intervals(j, 1)], [0 max(max(line_data, [], 2))], 'Color', [0.2 0 0]);
+    end
+    if(s.trials.intervals(j, 2) >= start_time && s.trials.intervals(j, 2) <= end_time)
+        line([s.trials.intervals(j, 2) s.trials.intervals(j, 2)], [0 max(max(line_data, [], 2))], 'Color', [0.2 0 0]);
+    end
+end
+
+% Customize the plot appearance
 xlabel('Time (s)');
 ylabel('Cluster Number');
 title(strcat("Spike Times in ", region_name));
