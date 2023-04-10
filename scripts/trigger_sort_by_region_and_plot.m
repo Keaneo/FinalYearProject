@@ -2,7 +2,7 @@
 %================================================
 rootDir = './allData'; % Directory to find Steinmetz data
 nProbe = 1; % Probe Number (0-indexed)
-region_names = ["MOs", "ACA"]; % Brain Regions to analyse
+region_names = ["MOs", "ACA", "LS", "root"]; % Brain Regions to analyse
 % Time range
 start_time = 65;
 end_time = 75;
@@ -102,3 +102,16 @@ switch userResponse
         disp('User closed the dialog without selecting an option.');
         % Do nothing;
 end
+
+% Plot the firing rates.
+
+figure(2);
+ax = gobjects(total_regions, 1);
+for i = 1:total_regions
+    ax(i) = subplot(total_regions, 1 ,i);
+    region_names = fieldnames(firing_rates);
+    region_name = region_names{i};
+    plot(firing_rates.(region_name));
+    box off;
+end
+
