@@ -2,23 +2,18 @@
 %================================================
 rootDir = './allData'; % Directory to find Steinmetz data
 nProbe = 1; % Probe Number (0-indexed)
-region_names = ["MOs", "ACA"]; % Brain Regions to analyse
+region_names = ["MOs", "ACA"]; % Add more region names if desired
 % Time range
 start_time = 65;
 end_time = 75;
-% Size (in seconds) of bin to get firing rate for
 bin_size = 0.05;
 
-%Load Session from Steinmetz dataset
 [s, sessionName] = load_session(rootDir);
 anatData = prepare_anat_data(s, nProbe);
-
-% Sort the data into region by cluster
 brain_region_spike_times = sort_spikes(s, anatData, sessionName);
 
 valid_region_names = cell(1, numel(region_names));
 
-% Ensure listed regions are present
 for i = 1:numel(region_names)
     valid_region_names{i} = regexprep(region_names{i}, '[^a-zA-Z0-9]', '');
     if ~isfield(brain_region_spike_times, valid_region_names{i})
@@ -33,35 +28,29 @@ total_regions = numel(region_names);
 question = 'Plot Spikes?';
 title = 'Yes or No';
 
-% Ask if user wants to plot spikes.
 userResponse = yes_no_button(question, title);
 
-% Process the user's response
 switch userResponse
     case 'Yes'
         disp('User selected "Yes".');
-
         figure;
         ax = gobjects(total_regions, 1);
         
-        % Iterate regions
-        for i = 1:total_regions           
+        for i = 1:total_regions
             region = brain_region_spike_times.(valid_region_names{i});
             
             % Create a subplot for each region
             ax(i) = subplot(total_regions, 1, i);
             plot_spikes(region, s, start_time, end_time);
             box off;
-            
-            % Remove X axis tick labels for all except the bottom subplot
+        
             if i < total_regions
                 set(ax(i), 'XTickLabel', {});
             end
-            % Label the y axis with region name.
+        
             ylabel(region_names(i));
         end
         
-        % Label x-axis units
         xlabel('Time (s)');
         
         % Adjust spacing between subplots to zero
@@ -87,8 +76,8 @@ end
 question = 'Get Firing Rates?';
 title = 'Yes or No';
 
-% Ask user if they want to get the firing rates
 userResponse = yes_no_button(question, title);
+
 
 % Process the user's response
 switch userResponse

@@ -1,4 +1,4 @@
-function plot_spikes(region, region_name, s, start_time, end_time, row_offset)
+function plot_spikes(region, s, start_time, end_time)
     line_data = [];
 
     field_names = fieldnames(region);
@@ -12,12 +12,12 @@ function plot_spikes(region, region_name, s, start_time, end_time, row_offset)
         num_elements = numel(cluster_vector);
         for i = 1:num_elements
             if cluster_vector(i) >= start_time && cluster_vector(i) <= end_time
-                line_data = [line_data; cluster_vector(i) k + row_offset k + 1 + row_offset];
+                line_data = [line_data; cluster_vector(i) k k + 1];
             end
         end
     end
 
     plot([line_data(:, 1) line_data(:, 1)]', [line_data(:, 2) line_data(:, 3)]', 'k-');
-
+    plot_events(s, start_time, end_time, max(max(line_data, [], 2)));
     
 end
