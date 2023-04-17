@@ -1,9 +1,9 @@
-% INPUTS:
-% time_series_data: A struct containing the time series data, with each field being a time series vector
-% p_max: Maximum model order to consider for VAR model selection
-% alpha: Significance level for the permutation test (e.g., 0.05)
-% nperms: Number of permutations for the significance testing
-
+    % INPUTS:
+    % time_series_data: A struct containing the time series data, with each field being a time series vector
+    % p_max: Maximum model order to consider for VAR model selection
+    % alpha: Significance level for the permutation test (e.g., 0.05)
+    % nperms: Number of permutations for the significance testing
+    
 function [F, Ftest, pvalues] = mvgc_analysis(time_series_data, p_max, alpha, nperms)
 
     % Convert struct to a 2D matrix
