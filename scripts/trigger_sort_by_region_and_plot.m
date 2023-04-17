@@ -125,4 +125,29 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
         ylabel(region_names(i));
     end
 
+    % MVGC Analysis
+    %================================================
+    
+    question = 'Run MVGC analysis?';
+    title = 'Yes or No';
+    
+    % Ask user if they want to get the firing rates
+    userResponse = yes_no_button(question, title);
+    
+    % Process the user's response
+    switch userResponse
+        case 'Yes'
+            disp('User selected "Yes".');
+            p_max = 10;
+            alpha = 0.05;
+            nperms = 1000;
+            [F, Ftest, pvalues] = mvgc_analysis(firing_rates, p_max, alpha, nperms)
+        case 'No'
+            disp('User selected "No".');
+            % Do nothing;
+        otherwise
+            disp('User closed the dialog without selecting an option.');
+            % Do nothing;
+    end
+
 end
