@@ -150,4 +150,27 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
             % Do nothing;
     end
 
+
+    % Graph MVGC results
+    %================================================
+    
+    question = 'Graph MVGC analysis?';
+    title = 'Yes or No';
+    
+    % Ask user if they want to get the firing rates
+    userResponse = yes_no_button(question, title);
+    
+    % Process the user's response
+    switch userResponse
+        case 'Yes'
+            disp('User selected "Yes".');
+            plot_coloured_matrix(pvalues, [0, 0, 1], [1, 0, 0], 0);
+        case 'No'
+            disp('User selected "No".');
+            % Do nothing;
+        otherwise
+            disp('User closed the dialog without selecting an option.');
+            % Do nothing;
+    end
+
 end
