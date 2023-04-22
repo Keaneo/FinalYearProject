@@ -16,7 +16,7 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
     anatData = prepare_anat_data(s, nProbe);
     
     % Sort the data into region by cluster
-    brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessionName);
+    brain_region_spike_times = sort_spikes(s, anatData, sessionName);
     
     valid_region_names = cell(1, numel(region_names));
     

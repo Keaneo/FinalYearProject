@@ -31,7 +31,7 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
         fprintf('Spikes not sorted, sorting...\n');
         brain_region_spike_times = struct();
         for region_idx = 1:numel(unique_brain_regions)
-            region = unique_brain_regions{region_idx}
+            region = unique_brain_regions{region_idx};
             region_spike_data = struct('correct', struct(), 'incorrect', struct());
             
             for cluster_idx = 1:numel(unique_clusters)
@@ -45,8 +45,8 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
                     for trial_idx = 1:length(stimOn)
                         trial_start = stimOn(trial_idx);
                         cluster_spike_times = spike_times(spike_clusters == cluster_id);
-                        spike_indices = cluster_spike_times >= trial_start & cluster_spike_times < trial_start + 0.4
-                        trial_spike_times = cluster_spike_times(spike_indices)
+                        spike_indices = cluster_spike_times >= trial_start & cluster_spike_times < trial_start + 0.4;
+                        trial_spike_times = cluster_spike_times(spike_indices);
                         
                         if choices(trial_idx) == true
                             outcome = 'correct';
@@ -55,7 +55,7 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
                         end
                         field_name = ['cluster_' num2str(cluster_id)];
                         if ~isfield(region_spike_data.(outcome), field_name)
-                            region_spike_data.(outcome).(field_name) = struct('cluster_id', cluster_id, 'spike_times', {cell(1, 1)}); 
+                            region_spike_data.(outcome).(field_name) = struct('cluster_id', cluster_id, 'spike_times', {cell(numel(trial_spike_times), 1)}); 
                             region_spike_data.(outcome).(field_name).spike_times{1} = trial_spike_times;
                         else
                             region_spike_data.(outcome).(['cluster_' num2str(cluster_id)]).spike_times{end+1} = trial_spike_times;
