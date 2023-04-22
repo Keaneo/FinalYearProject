@@ -19,7 +19,7 @@ function brain_region_spike_times = sort_spikes(s, anatData, session_name)
                 cluster_id = unique_clusters(cluster_idx);
                 channel_idx = s.clusters.peakChannel(cluster_id+1);
                 channel_coord = s.channels.sitePositions(channel_idx, :);
-                cluster_brain_region_idx = find(anatData.borders.lowerBorder <= channel_coord(2) & anatData.borders.upperBorder > channel_coord(2));
+                cluster_brain_region_idx = anatData.borders.lowerBorder <= channel_coord(2) & anatData.borders.upperBorder > channel_coord(2);
                 cluster_brain_region = anatData.borders.acronym{cluster_brain_region_idx};
         
                 if strcmp(region, cluster_brain_region)
