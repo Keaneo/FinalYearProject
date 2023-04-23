@@ -16,10 +16,11 @@ function brain_region_spike_times = sort_spikes(s, anatData, session_name)
         if isempty(gcp('nocreate'))
             parpool;
         end
+        tic
         parfor region_idx = 1:numel(unique_brain_regions)
-            region = unique_brain_regions{region_idx};
+            region = unique_brain_regions{region_idx}
             region_spike_data = struct();
-        
+            
             for cluster_idx = 1:numel(unique_clusters)
                 cluster_id = unique_clusters(cluster_idx);
                 channel_idx = s.clusters.peakChannel(cluster_id+1);
@@ -36,10 +37,15 @@ function brain_region_spike_times = sort_spikes(s, anatData, session_name)
         
             region_spike_data_cell{region_idx} = region_spike_data;
         end
-        brain_region_spike_times = cell2struct(region_spike_data_cell, unique_brain_regions, 1);
+        valid_region_names = [];
+        for i = 1:numel(unique_brain_regions)
+            valid_region_names = [valid_region_names, regexprep(unique_brain_regions(i), '[^a-zA-Z0-9]', '')];
+        end
+        brain_region_spike_times = cell2struct(region_spike_data_cell, valid_region_names, 1);
         save(strcat('processed/spike_times_by_region', session_name ,'.mat'), "brain_region_spike_times");
-       
-        fprintf('Spikes Sorted!');
+        
+        fprintf('Spikes Sorted!\n');
+        toc
     end
 end
 

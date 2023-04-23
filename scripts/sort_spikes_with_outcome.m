@@ -21,18 +21,23 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
             % correct no-go
             choices(i) = (outcomes(i) == 0);
         end
-        choices(i)
+        choices(i);
     end
 
-    if exist(filename, 'file') == 2
-        fprintf('Spikes already sorted\n');
+   if exist(filename, 'file') == 2
+        fprintf('Spikes already sorted by region\n');
         load(filename);
     else
         fprintf('Spikes not sorted, sorting...\n');
-        brain_region_spike_times = struct();
-        for region_idx = 1:numel(unique_brain_regions)
-            region = unique_brain_regions{region_idx};
-            region_spike_data = struct('correct', struct(), 'incorrect', struct());
+        region_spike_data_cell = cell(numel(unique_brain_regions), 1);
+        % Parallelize
+        if isempty(gcp('nocreate'))
+            parpool;
+        end
+        tic
+        parfor region_idx = 1:numel(unique_brain_regions)
+            region = unique_brain_regions{region_idx}
+            region_spike_data = struct();
             
             for cluster_idx = 1:numel(unique_clusters)
                 cluster_id = unique_clusters(cluster_idx);
@@ -40,34 +45,43 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
                 channel_coord = s.channels.sitePositions(channel_idx, :);
                 cluster_brain_region_idx = anatData.borders.lowerBorder <= channel_coord(2) & anatData.borders.upperBorder > channel_coord(2);
                 cluster_brain_region = anatData.borders.acronym{cluster_brain_region_idx};
-        
+
+                % Get the outcomes for each trial
+                % Iterate the trials
+                % Find the spikes within the times of each trial
+                % Save them in their correspoding outcome label (per
+                % cluster or per outcome basis???)
+
                 if strcmp(region, cluster_brain_region)
-                    for trial_idx = 1:length(stimOn)
-                        trial_start = stimOn(trial_idx);
-                        cluster_spike_times = spike_times(spike_clusters == cluster_id);
-                        spike_indices = cluster_spike_times >= trial_start & cluster_spike_times < trial_start + 0.4;
-                        trial_spike_times = cluster_spike_times(spike_indices);
-                        
-                        if choices(trial_idx) == true
-                            outcome = 'correct';
+                    cluster_spike_times = spike_times(spike_clusters == cluster_id);
+                    correct_spikes = []
+                    incorrect_spikes = []
+                    for trial_idx = 1:numel(choices)
+                        trial_spikes = cluster_spike_times(cluster_spike_times >= stimOn(trial_idx) & cluster_spike_times <= (stimOn(trial_idx) + 0.4));
+                        if choices(trial_idx)
+                            "Correct trial!";
+                            correct_spikes = vertcat(correct_spikes, trial_spikes);
                         else
-                            outcome = 'incorrect';
-                        end
-                        field_name = ['cluster_' num2str(cluster_id)];
-                        if ~isfield(region_spike_data.(outcome), field_name)
-                            region_spike_data.(outcome).(field_name) = struct('cluster_id', cluster_id, 'spike_times', {cell(numel(trial_spike_times), 1)}); 
-                            region_spike_data.(outcome).(field_name).spike_times{1} = trial_spike_times;
-                        else
-                            region_spike_data.(outcome).(['cluster_' num2str(cluster_id)]).spike_times{end+1} = trial_spike_times;
+                            "Incorrect trial!";
+                            incorrect_spikes = vertcat(incorrect_spikes, trial_spikes);
                         end
                     end
+                    cluster_data = struct('cluster_id', cluster_id, 'outcomes', struct('correct', correct_spikes, 'incorrect', incorrect_spikes));
+                    region_spike_data.(['cluster_' num2str(cluster_id)]) = cluster_data;
                 end
             end
         
-            valid_field_name = regexprep(region, '[^a-zA-Z0-9]', '');
-            brain_region_spike_times.(valid_field_name) = region_spike_data;
-            save(filename, "brain_region_spike_times");
+            region_spike_data_cell{region_idx} = region_spike_data;
         end
-        fprintf('Spikes Sorted!');
+        valid_region_names = [];
+        for i = 1:numel(unique_brain_regions)
+            valid_region_names = [valid_region_names, regexprep(unique_brain_regions(i), '[^a-zA-Z0-9]', '')];
+        end
+        brain_region_spike_times = cell2struct(region_spike_data_cell, valid_region_names, 1);
+        save(strcat('processed/spike_times_by_region_with_outcomes', session_name ,'.mat'), "brain_region_spike_times");
+        
+        fprintf('Spikes Sorted!\n');
+        toc
     end
 end
+
