@@ -16,7 +16,9 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
     anatData = prepare_anat_data(s, nProbe);
     
     % Sort the data into region by cluster
-    brain_region_spike_times = sort_spikes(s, anatData, sessionName);
+    brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessionName);
+
+    region_names = unique(anatData.borders.acronym);
     
     valid_region_names = cell(1, numel(region_names));
     
@@ -108,21 +110,28 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
     % Plot the firing rates.
     
     figure(2);
-    ax = gobjects(total_regions, 1);
+    ax = gobjects(total_regions * 2, 1);
     for i = 1:total_regions
-        % Setup subplot
-        ax(i) = subplot(total_regions, 1 ,i);
-    
-        % Get region
-        region_names = fieldnames(firing_rates);
-        region_name = region_names{i};
-    
-        % Plot firing rates
-        plot(firing_rates.(region_name));
-        box off;
-    
-        % Label the y axis with region name.
-        ylabel(region_names(i));
+        for ii = 1:2
+            % Setup subplot
+            ax((i - 1) * 2 + ii) = subplot(total_regions * 2, 1, (i - 1) * 2 + ii);
+        
+            % Get region
+            region_names = fieldnames(firing_rates);
+            region_name = region_names{i};
+
+            % Get choice
+            choices = fieldnames(firing_rates.(region_name));
+            choice = choices{ii};
+        
+            % Plot firing rates
+            plot(firing_rates.(region_name).(choice));
+            plot_events(s, start_time, end_time, max(max(firing_rates.(region_name).(choice))), 1/bin_size);
+            box off;
+        
+            % Label the y axis with region name.
+            ylabel([region_names(i), choice]);
+        end
     end
 
     % MVGC Analysis

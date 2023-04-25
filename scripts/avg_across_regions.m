@@ -16,29 +16,36 @@ function firing_rates = avg_across_regions(brain_region_spike_times, region_name
 
         % Initialize a matrix to store binned spike counts for each cluster
         num_bins = ceil((end_time - start_time) / bin_size);
-        all_spike_counts = zeros(numel(field_names), num_bins);
+        all_spike_counts_correct = zeros(numel(field_names), num_bins);
+        all_spike_counts_incorrect = zeros(numel(field_names), num_bins);
 
         for k = 1:numel(field_names)
             cluster_struct = region.(field_names{k});
             cluster_field_names = fieldnames(cluster_struct);
             cluster_name = cluster_field_names{2};
             cluster_vector = cluster_struct.(cluster_name);
-            
+            cluster_vector_correct = cluster_vector.correct
+            cluster_vector_incorrect = cluster_vector.incorrect
             % Filter spikes based on the time range
-            cluster_vector = cluster_vector(cluster_vector >= start_time & cluster_vector <= end_time);
+            cluster_vector_correct = cluster_vector_correct(cluster_vector_correct >= start_time & cluster_vector_correct <= end_time);
+            cluster_vector_incorrect = cluster_vector_incorrect(cluster_vector_incorrect >= start_time & cluster_vector_incorrect <= end_time);
 
             % Divide spike times into bins and count the number of spikes per bin
             bin_edges = start_time:bin_size:end_time;
-            spike_counts = histcounts(cluster_vector, bin_edges);
-
+            spike_counts_correct = histcounts(cluster_vector_correct, bin_edges);
+            spike_counts_incorrect = histcounts(cluster_vector_incorrect, bin_edges);
             % Store the binned spike counts for the current cluster
-            all_spike_counts(k, :) = spike_counts;
+            all_spike_counts_correct(k, :) = spike_counts_correct;
+            all_spike_counts_incorrect(k, :) = spike_counts_incorrect;
         end
 
         % Calculate the average spike count across all clusters and divide by the bin size (in seconds) to get the firing rate
-        avg_spike_counts = mean(all_spike_counts, 1);
-        region_firing_rates = avg_spike_counts / (bin_size);
+        avg_spike_counts_correct = mean(all_spike_counts_correct, 1);
+        avg_spike_counts_incorrect = mean(all_spike_counts_incorrect, 1);
+        region_firing_rates_correct = avg_spike_counts_correct / (bin_size);
+        region_firing_rates_incorrect = avg_spike_counts_incorrect / (bin_size);
         
-        firing_rates.(valid_region_names{r}) = region_firing_rates;
+        firing_rates.(valid_region_names{r}).correct = region_firing_rates_correct;
+        firing_rates.(valid_region_names{r}).incorrect = region_firing_rates_incorrect;
     end
 end

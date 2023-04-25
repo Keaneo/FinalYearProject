@@ -8,17 +8,30 @@ function [F, Ftest, pvalues] = mvgc_analysis(time_series_data, p_max, alpha, npe
 
     % Convert struct to a 2D matrix
     time_series_names = fieldnames(time_series_data);
-    n = numel(time_series_names);
-    t = length(time_series_data.(time_series_names{1}));
+    choices_names = fieldnames(time_series_data.(time_series_names{1}));
+    n = numel(time_series_names) * 2;
+    t = length(time_series_data.(time_series_names{1}).(choices_names{1}));
     X = zeros(n, t);
     
-    for i = 1:n
-        X(i, :) = time_series_data.(time_series_names{i});
+    for i = 1:n/2
+        for ii = 1:2
+            X(i, :) = time_series_data.(time_series_names{i}).(choices_names{ii});
+        end
     end
 
     % Detrend and normalize data
     X_detrended = detrend(X', 'constant')';
     X_normalized = normalize(X_detrended', 'scale')';
+
+    X_diff = diff(X, 1, 2);
+    constant_columns = all(X_diff == 0, 1);
+    X = X(:, ~constant_columns);
+    
+    % Add a small positive constant to the diagonal elements of the covariance matrix
+    % to ensure that it is positive definite, firing rates contain many zeroes
+    n_vars = size(X, 1);
+    regularization_constant = 1e-6;
+    cov_matrix = cov(X') + regularization_constant * eye(n_vars);
 
     % Choose model order
     [~, AIC, BIC] = tsdata_to_infocrit(X_normalized, p_max);

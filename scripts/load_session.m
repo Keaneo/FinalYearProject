@@ -1,10 +1,12 @@
-function [s, sessionName] = load_session(rootDir)
+function [s, sessionName] = load_session(rootDir, indx)
     if ~isempty(rootDir)
         d = dir(fullfile(rootDir, '*')); 
         d = d([d.isdir]); 
         sessionNames = {d.name}; 
         sessionNames = sessionNames(~strcmp(sessionNames, '.') & ~strcmp(sessionNames,'..')); 
-        indx = listdlg('ListString',sessionNames, 'Name', 'Select a session');
+        if nargin < 2 || isempty(indx)
+            indx = listdlg('ListString',sessionNames, 'Name', 'Select a session');
+        end
 
         if ~isempty(indx)
             s = loadSession(fullfile(rootDir, sessionNames{indx}));
