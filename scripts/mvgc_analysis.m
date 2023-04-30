@@ -11,11 +11,18 @@ function [F, Ftest, pvalues] = mvgc_analysis(time_series_data, p_max, alpha, npe
     choices_names = fieldnames(time_series_data.(time_series_names{1}));
     n = numel(time_series_names) * 2;
     t = length(time_series_data.(time_series_names{1}).(choices_names{1}));
-    X = zeros(n, t);
+    X = cell(n, 1);
     
     for i = 1:n/2
         for ii = 1:2
-            X(i, :) = time_series_data.(time_series_names{i}).(choices_names{ii});
+            % Get the current time series
+            current_series = time_series_data.(time_series_names{i}).(choices_names{ii});
+            
+            % Remove zeroes
+            current_series(current_series == 0) = [];
+            
+            % Store in the cell array
+            X{(i-1)*2 + ii} = current_series;
         end
     end
 
@@ -27,12 +34,6 @@ function [F, Ftest, pvalues] = mvgc_analysis(time_series_data, p_max, alpha, npe
     constant_columns = all(X_diff == 0, 1);
     X = X(:, ~constant_columns);
     
-    % Add a small positive constant to the diagonal elements of the covariance matrix
-    % to ensure that it is positive definite, firing rates contain many zeroes
-    n_vars = size(X, 1);
-    regularization_constant = 1e-6;
-    cov_matrix = cov(X') + regularization_constant * eye(n_vars);
-
     % Choose model order
     [~, AIC, BIC] = tsdata_to_infocrit(X_normalized, p_max);
     [minAIC, p_AIC] = min(AIC);

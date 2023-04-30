@@ -22,10 +22,10 @@ function firing_rates = avg_across_regions(brain_region_spike_times, region_name
         for k = 1:numel(field_names)
             cluster_struct = region.(field_names{k});
             cluster_field_names = fieldnames(cluster_struct);
-            cluster_name = cluster_field_names{2};
+            cluster_name = cluster_field_names{2}
             cluster_vector = cluster_struct.(cluster_name);
-            cluster_vector_correct = cluster_vector.correct
-            cluster_vector_incorrect = cluster_vector.incorrect
+            cluster_vector_correct = cluster_vector.correct;
+            cluster_vector_incorrect = cluster_vector.incorrect;
             % Filter spikes based on the time range
             cluster_vector_correct = cluster_vector_correct(cluster_vector_correct >= start_time & cluster_vector_correct <= end_time);
             cluster_vector_incorrect = cluster_vector_incorrect(cluster_vector_incorrect >= start_time & cluster_vector_incorrect <= end_time);
