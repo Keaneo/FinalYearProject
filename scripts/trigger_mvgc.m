@@ -15,6 +15,6 @@ function trigger_mvgc(rootDir, nProbe, region_names, start_time, end_time, bin_s
     nperms = 500;
     sessionIndx
     [pvalues, Ftest, region_names] = mvgc_analysis(firing_rates, p_max, alpha, nperms)
-    %plot_coloured_matrix(pvalues, [1, 0, 0], [0, 0, 1], 0, region_names, region_names);
+    plot_coloured_matrix(pvalues, [1, 0, 0], [0, 0, 1], 0, region_names, region_names);
     save(strcat('processed/pvalues/pval', sessionName ,'.mat'), "pvalues");
 end

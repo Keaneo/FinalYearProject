@@ -57,6 +57,8 @@ function plot_coloured_matrix(matrix, minColor, maxColor, ignoreValue, rowLabels
                   linspace(minColor(2), maxColor(2), 256)', ...
                   linspace(minColor(3), maxColor(3), 256)']);
     c = colorbar;
-    caxis([minValue, maxValue]);
-    ylabel(c, 'Value');
+    if max(matrix(:)) ~= 0
+        caxis([minValue, maxValue]);
+        ylabel(c, 'Value');
+    end
 end

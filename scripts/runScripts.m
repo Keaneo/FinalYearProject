@@ -23,5 +23,5 @@ bin_size = 0.005;
 
 %trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_time, end_time, bin_size);
 
- indx = 20
+ indx = 1
  trigger_mvgc(rootDir, nProbe, region_names, start_time, end_time, bin_size, indx);

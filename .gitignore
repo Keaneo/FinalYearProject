@@ -6,3 +6,5 @@
 *.zip
 *.mat
 *.asv
+*.png
+processed/.DS_Store
