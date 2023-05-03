@@ -9,6 +9,7 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
     contRight = s.trials.visualStim_contrastRight;
     stimOn = s.trials.visualStim_times;
     outcomes = s.trials.response_choice;
+    response = s.trials.response_times;
     choices = zeros(length(stimOn), 1);
     for i = 1:length(stimOn)
         if contLeft(i) > contRight(i)
@@ -57,7 +58,10 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
                     correct_spikes = [];
                     incorrect_spikes = [];
                     for trial_idx = 1:numel(choices)
+                        % Stim Locked
                         trial_spikes = cluster_spike_times(cluster_spike_times >= stimOn(trial_idx) & cluster_spike_times <= (stimOn(trial_idx) + 0.4));
+                        % Response Locked
+                        %trial_spikes = cluster_spike_times(cluster_spike_times >= (response(trial_idx) - 0.38) & cluster_spike_times <= (response(trial_idx) + 0.02));
                         if choices(trial_idx)
                             "Correct trial!";
                             correct_spikes = vertcat(correct_spikes, trial_spikes);
