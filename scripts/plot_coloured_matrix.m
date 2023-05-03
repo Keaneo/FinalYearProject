@@ -1,11 +1,11 @@
-function plot_coloured_matrix(matrix, minColor, maxColor, ignoreValue, rowLabels, columnLabels)
+function plot_coloured_matrix(mvgcMatrix, sigMatrix, minColor, maxColor, ignoreValue, rowLabels, columnLabels, alpha)
     % Get matrix size
-    [rows, cols] = size(matrix);
+    [rows, cols] = size(mvgcMatrix);
 
     % Normalize matrix values between 0 and 1
-    minValue = min(matrix(:));
-    maxValue = max(matrix(:));
-    normalizedMatrix = (matrix - minValue) / (maxValue - minValue);
+    minValue = min(mvgcMatrix(:));
+    maxValue = max(mvgcMatrix(:));
+    normalizedMatrix = (mvgcMatrix - minValue) / (maxValue - minValue);
 
     % Create a figure and axes for the plot
     figure;
@@ -15,11 +15,16 @@ function plot_coloured_matrix(matrix, minColor, maxColor, ignoreValue, rowLabels
     for row = 1:rows
         for col = 1:cols
             % Check for the value to be ignored
-            if matrix(row, col) == ignoreValue || row == col
+            if mvgcMatrix(row, col) == ignoreValue || row == col
                 % Create a grey square
                 rectangle(ax, 'Position', [col, rows - row + 1, 1, 1], ...
                              'FaceColor', [0.5 0.5 0.5], ...
                              'EdgeColor', 'none');
+            else if sigMatrix(row, col)
+                rectangle(ax, 'Position', [col, rows - row + 1, 1, 1], ...
+                            'FaceColor', [0 1 0], ...
+                            'EdgeColor', 'none');
+                text(ax, col+0.5, rows-rows+0.5, num2str(sigMatrix(row, col)));
             else
                 % Interpolate between minColor and maxColor
                 color = minColor + normalizedMatrix(row, col) * (maxColor - minColor);
@@ -36,13 +41,13 @@ function plot_coloured_matrix(matrix, minColor, maxColor, ignoreValue, rowLabels
     ax.YDir = 'normal';
     % Add x-axis labels
     for col = 1:cols
-        text(col + 0.5, 0.5, columnLabels{col}, 'HorizontalAlignment', 'center', ...
+        text(col + 0.5, 0.9, columnLabels{col}, 'HorizontalAlignment', 'center', ...
              'VerticalAlignment', 'top', 'Rotation', 90);
     end
     
     % Add y-axis labels
     for row = 1:rows
-        text(0.5, row + 0.5, rowLabels{row}, 'HorizontalAlignment', 'right', ...
+        text(0.9, row + 0.5, rowLabels{row}, 'HorizontalAlignment', 'right', ...
              'VerticalAlignment', 'middle');
     end
 
@@ -57,7 +62,7 @@ function plot_coloured_matrix(matrix, minColor, maxColor, ignoreValue, rowLabels
                   linspace(minColor(2), maxColor(2), 256)', ...
                   linspace(minColor(3), maxColor(3), 256)']);
     c = colorbar;
-    if max(matrix(:)) ~= 0
+    if max(mvgcMatrix(:)) ~= 0
         caxis([minValue, maxValue]);
         ylabel(c, 'Value');
     end

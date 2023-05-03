@@ -1,4 +1,4 @@
-function [pvalues, Ftest, time_series_names] = mvgc_analysis(time_series_data, p_max, alpha, nperms)
+function [pvalues, F, time_series_names] = mvgc_analysis(time_series_data, p_max, alpha, nperms)
     % INPUTS:
     % time_series_data: A struct containing the time series data, with each field being a time series vector
     % p_max: Maximum model order to consider for VAR model selection
@@ -12,7 +12,7 @@ function [pvalues, Ftest, time_series_names] = mvgc_analysis(time_series_data, p
         hasNaN(i) = any(isnan(time_series_data.(fields{i})));
     end
     for i = 1:numel(fields)
-        if hasNaN(i)
+        if hasNaN(i) || strcmp(fields{i}, 'root')
             time_series_data = rmfield(time_series_data, fields{i});
         end
     end
@@ -24,7 +24,7 @@ function [pvalues, Ftest, time_series_names] = mvgc_analysis(time_series_data, p
     X = zeros(n, t);
     
     for i = 1:n
-        X(i, :) = time_series_data.(time_series_names{i});
+            X(i, :) = time_series_data.(time_series_names{i});
     end
 
     % Detrend and normalize data
@@ -43,25 +43,24 @@ function [pvalues, Ftest, time_series_names] = mvgc_analysis(time_series_data, p
     p_opt = moaic;
 
     % Estimate VAR model
-    [A, SIG] = tsdata_to_var(X_normalized, p_opt);
+    [A, SIG] = tsdata_to_var(X_normalized, p_opt, 'LWR');
 
      % Test for Granger causality
-    F = var_to_pwcgc(A, SIG);
+    [F, pvalues] = var_to_pwcgc(A, SIG, X_normalized, 'LWR');
 
     % Significance testing
-    bsize = []; % Use default (model order)
-    FP = permtest_tsdata_to_pwcgc(X_normalized, p, bsize, nperms);
+    %bsize = []; % Use default (model order)
+    %FP = permtest_tsdata_to_pwcgc(X_normalized, p, bsize, nperms);
 
-    pvalues = zeros(n, n);
-    for i = 1:n
-        for j = 1:n
-            if i ~= j
-                pvalues(i, j) = sum(FP(:, i, j) >= F(i, j)) / nperms;
-            end
-        end
-    end
+%     pvalues = zeros(n, n);
+%     for i = 1:n
+%         for j = 1:n
+%             if i ~= j
+%                 pvalues(i, j) = sum(FP(:, i, j) >= F(i, j)) / nperms;
+%             end
+%         end
+%     end
 
 
-    % Create a binary matrix indicating significant relationships
-    Ftest = pvalues < alpha & pvalues > 0;
+    
 end
