@@ -5,15 +5,17 @@ function [pvalues, F, time_series_names] = mvgc_analysis(time_series_data, p_max
     % alpha: Significance level for the permutation test (e.g., 0.05)
     % nperms: Number of permutations for the significance testing
 
-    fields = fieldnames(time_series_data);
-    hasNaN = false(1, numel(fields));
-    
-    for i = 1:numel(fields)
-        hasNaN(i) = any(isnan(time_series_data.(fields{i})));
-    end
-    for i = 1:numel(fields)
-        if hasNaN(i) || strcmp(fields{i}, 'root')
-            time_series_data = rmfield(time_series_data, fields{i});
+    for k = 1:size(time_series_data.three_d_sorted, 3)      
+        fields = time_series_data.three_d_sorted(:, 1, k);
+        hasNaN = false(1, numel(fields));
+        for i = 1:numel(fields)
+            hasNaN(i) = any(isnan(time_series_data.three_d_sorted{i, 2, k}));
+        end
+        for i = 1:numel(fields)
+            if hasNaN(i) || strcmp(fields{i}, 'root')
+                time_series_data.three_d_sorted(i, :, k) = [];
+                %time_series_data.three_d_sorted(i, 2, k) = [];            
+            end
         end
     end
 

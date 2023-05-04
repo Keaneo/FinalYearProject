@@ -22,7 +22,6 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
             % correct no-go
             choices(i) = (outcomes(i) == 0);
         end
-        choices(i);
     end
 
    if exist(filename, 'file') == 2
@@ -31,10 +30,6 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
     else
         fprintf('Spikes not sorted, sorting...\n');
         region_spike_data_cell = cell(numel(unique_brain_regions), 1);
-        % Parallelize
-        if isempty(gcp('nocreate'))
-            parpool;
-        end
         tic % for getting time elapsed
         parfor region_idx = 1:numel(unique_brain_regions)
             region = unique_brain_regions{region_idx}
