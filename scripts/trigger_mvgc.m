@@ -9,7 +9,7 @@ function trigger_mvgc(rootDir, nProbe, region_names, start_time, end_time, bin_s
     %brain_region_spike_times = sort_spikes(s, anatData, sessionName);
     %region_names = unique(anatData.borders.acronym)
     %firing_rates = avg_across_regions_no_outcome(brain_region_spike_times, region_names, start_time, end_time, bin_size);
-    filename = strcat('processed/spike_times_three_d', sessionName, '.mat');
+    filename = strcat('processed/spike_times_three_d', sessionName, 'REPONSE.mat');
     three_d_sorted = load(filename, "three_d_sorted");
     p_max = 10;
     alpha = 0.05;
@@ -22,6 +22,6 @@ function trigger_mvgc(rootDir, nProbe, region_names, start_time, end_time, bin_s
     % Create a matrix of significant relationships
     significant_values = double((pvalues < alpha) & (pvalues > 0));
     plot_coloured_matrix(F, significant_values, [1, 0, 0], [0, 0, 1], 0, region_names, flip(region_names), alpha);
-    save(strcat('processed/pvalues/pval', sessionName ,'.mat'), "F");
-    saveas(gcf, strcat('graphs/', sessionName, '.png'));
+    %save(strcat('processed/pvalues/pval', sessionName ,'.mat'), "F");
+    saveas(gcf, strcat('graphs/', sessionName, 'RESPONSE.png'));
 end

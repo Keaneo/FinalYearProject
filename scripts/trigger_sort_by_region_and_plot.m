@@ -16,7 +16,7 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
     anatData = prepare_anat_data(s, nProbe);
     
     % Sort the data into region by cluster
-    brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessionName);
+    brain_region_spike_times = sort_spikes(s, anatData, sessionName);
 
     region_names = unique(anatData.borders.acronym);
     
@@ -32,57 +32,57 @@ function trigger_sort_by_region_and_plot(rootDir, nProbe, region_names, start_ti
     
     total_regions = numel(region_names);
     
-    % PLOTTING SPIKES
+    %PLOTTING SPIKES
     %================================================
-%     question = 'Plot Spikes?';
-%     title = 'Yes or No';
-%     
-%     % Ask if user wants to plot spikes.
-%     userResponse = yes_no_button(question, title);
-%     
-%     % Process the user's response
-%     switch userResponse
-%         case 'Yes'
-%             disp('User selected "Yes".');
-%     
-%             figure;
-%             ax = gobjects(total_regions, 1);
-%             
-%             % Iterate regions
-%             for i = 1:total_regions           
-%                 region = brain_region_spike_times.(valid_region_names{i});
-%                 
-%                 % Create a subplot for each region
-%                 ax(i) = subplot(total_regions, 1, i);
-%                 plot_spikes(region, s, start_time, end_time);
-%                 box off;
-%                 
-%                 % Remove X axis tick labels for all except the bottom subplot
-%                 if i < total_regions
-%                     set(ax(i), 'XTickLabel', {});
-%                 end
-%                 % Label the y axis with region name.
-%                 ylabel(region_names(i));
-%             end
-%             
-%             % Label x-axis units
-%             xlabel('Time (s)');
-%             
-%             % Adjust spacing between subplots to zero
-%     %         for i = 1:(total_regions-1)
-%     %             pos1 = get(ax(i), 'Position');
-%     %             pos2 = get(ax(i+1), 'Position');
-%     %             pos1(2) = pos2(2) + pos2(4);
-%     %             set(ax(i), 'Position', pos1);
-%     %         end
-%             
-%         case 'No'
-%             disp('User selected "No".');
-%             % Do nothing;
-%         otherwise
-%             disp('User closed the dialog without selecting an option.');
-%             % Do nothing;
-%     end
+    question = 'Plot Spikes?';
+    title = 'Yes or No';
+    
+    % Ask if user wants to plot spikes.
+    userResponse = yes_no_button(question, title);
+    
+    % Process the user's response
+    switch userResponse
+        case 'Yes'
+            disp('User selected "Yes".');
+    
+            figure;
+            ax = gobjects(total_regions, 1);
+            
+            % Iterate regions
+            for i = 1:total_regions           
+                region = brain_region_spike_times.(valid_region_names{i});
+                
+                % Create a subplot for each region
+                ax(i) = subplot(total_regions, 1, i);
+                plot_spikes(region, s, start_time, end_time);
+                box off;
+                
+                % Remove X axis tick labels for all except the bottom subplot
+                if i < total_regions
+                    set(ax(i), 'XTickLabel', {});
+                end
+                % Label the y axis with region name.
+                ylabel(region_names(i));
+            end
+            
+            % Label x-axis units
+            xlabel('Time (s)');
+            
+            % Adjust spacing between subplots to zero
+    %         for i = 1:(total_regions-1)
+    %             pos1 = get(ax(i), 'Position');
+    %             pos2 = get(ax(i+1), 'Position');
+    %             pos1(2) = pos2(2) + pos2(4);
+    %             set(ax(i), 'Position', pos1);
+    %         end
+            
+        case 'No'
+            disp('User selected "No".');
+            % Do nothing;
+        otherwise
+            disp('User closed the dialog without selecting an option.');
+            % Do nothing;
+    end
     
     
     % FIRING RATES

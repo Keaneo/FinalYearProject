@@ -10,7 +10,7 @@ function three_d_sorted = sort_spikes_three_d(s, anatData, session_name, bin_siz
     end
 
     split_region_file = strcat('processed/spike_times_by_region', session_name, '.mat');
-    filename = strcat('processed/spike_times_three_d', session_name, '.mat');
+    filename = strcat('processed/spike_times_three_d', session_name, 'REPONSE.mat');
 
     stimOn = s.trials.visualStim_times;
     response = s.trials.response_times;
@@ -40,17 +40,20 @@ function three_d_sorted = sort_spikes_three_d(s, anatData, session_name, bin_siz
                 data_cell{region_idx, 1, trial_idx} = unique_brain_regions{region_idx};
                 clusters = brain_region_spike_times.(unique_brain_regions{region_idx});
                 % Bin spikes into 5ms bins and average across all clusters
-                all_cluster_counts = zeros(numel(fieldnames(clusters)), ceil((stimOn(trial_idx) + 0.4 - stimOn(trial_idx)) / bin_size));
+
+                spike_range = ((response(trial_idx) + 0.35) - (response(trial_idx) - 0.05));
+                %spike_range = (stimOn(trial_idx) + 0.4 - stimOn(trial_idx));
+
+                all_cluster_counts = zeros(numel(fieldnames(clusters)), ceil(spike_range / bin_size));
                 cluster_fieldnames = fieldnames(clusters);
                 for cluster_idx = 1:numel(fieldnames(clusters))
-                    num_bins = ceil((stimOn(trial_idx) + 0.4 - stimOn(trial_idx)) / bin_size);
+                    num_bins = ceil(spike_range / bin_size);
                     cluster_fields = fieldnames(clusters.(cluster_fieldnames{cluster_idx}));
                     counts = histcounts(clusters.(cluster_fieldnames{cluster_idx}).(cluster_fields{2}), num_bins);
                     all_cluster_counts(cluster_idx, :) = counts;
                 end
                 avg_spike_counts = mean(all_cluster_counts, 1);
                 region_firing_rates = avg_spike_counts / (bin_size);
-                %spikes = spikes(spikes >= stimOn(trial_idx) & spikes <= stimOn(trial_idx) + 0.4);
                 data_cell{region_idx, 2, trial_idx} = region_firing_rates;
             end
 
@@ -58,7 +61,7 @@ function three_d_sorted = sort_spikes_three_d(s, anatData, session_name, bin_siz
 
         %three_d_sorted = cell2struct(data_cell, unique_brain_regions, 1);
         three_d_sorted = data_cell;
-        save(strcat('processed/spike_times_three_d', session_name, '.mat'), "three_d_sorted");
+        save(filename, "three_d_sorted");
 
         fprintf('Spikes Sorted!\n');
         toc

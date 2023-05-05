@@ -15,12 +15,12 @@ d = d([d.isdir]);
 sessionNames = {d.name};
 tic
 % trigger_sorting(rootDir, 1);
-    for indx = 1:numel(sessionNames) - 2 % minus two to ignore the . and ..
-%         try
-        %trigger_sorting_all(rootDir, indx, bin_size);
+    parfor indx = 1:numel(sessionNames) - 2 % minus two to ignore the . and ..
+%          try
+%         trigger_sorting_all(rootDir, indx, bin_size);
         trigger_mvgc(rootDir, nProbe, region_names, start_time, end_time, bin_size, indx);
-%         catch
-%             continue;
+%          catch 
+%             
 %         end
     end
 
