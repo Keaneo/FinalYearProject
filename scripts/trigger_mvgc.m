@@ -16,6 +16,9 @@ function trigger_mvgc(rootDir, nProbe, region_names, start_time, end_time, bin_s
     nperms = 500;
     sessionIndx
     [pvalues, F, region_names] = mvgc_analysis(three_d_sorted, p_max, alpha, nperms)
+    if isnan(pvalues)
+        return
+    end
     % Create a matrix of significant relationships
     significant_values = double((pvalues < alpha) & (pvalues > 0));
     plot_coloured_matrix(F, significant_values, [1, 0, 0], [0, 0, 1], 0, region_names, flip(region_names), alpha);

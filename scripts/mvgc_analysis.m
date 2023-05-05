@@ -5,35 +5,46 @@ function [pvalues, F, time_series_names] = mvgc_analysis(time_series_data, p_max
     % alpha: Significance level for the permutation test (e.g., 0.05)
     % nperms: Number of permutations for the significance testing
 
-    for k = 1:size(time_series_data.three_d_sorted, 3)      
-        fields = time_series_data.three_d_sorted(:, 1, k);
-        hasNaN = false(1, numel(fields));
-        for i = 1:numel(fields)
-            hasNaN(i) = any(isnan(time_series_data.three_d_sorted{i, 2, k}));
-        end
-        for i = 1:numel(fields)
-            if hasNaN(i) || strcmp(fields{i}, 'root')
-                time_series_data.three_d_sorted(i, :, k) = [];
-                %time_series_data.three_d_sorted(i, 2, k) = [];            
-            end
+    time_series_data.three_d_sorted{1, 1, 1}
+
+    % Find rows with NaN elements & remove them     
+    fields = time_series_data.three_d_sorted(:, 1, 1);
+    hasNaN = false(1, numel(fields));
+    for i = 1:numel(fields)
+        hasNaN(i) = any(isnan(time_series_data.three_d_sorted{i, 2, 1}));
+        if hasNaN(i) || strcmp(fields{i}, 'root')
+            % Remove every row in the matrix at that index to preserve shape
+            time_series_data.three_d_sorted(i, :, :) = [];
+            break;            
         end
     end
 
     % Convert struct to a 2D matrix
-    time_series_names = fieldnames(time_series_data);
-    n = numel(time_series_names);
-    t = length(time_series_data.(time_series_names{1}));
-    X = zeros(n, t);
+    time_series_names = time_series_data.three_d_sorted(:, 1, 1)
+    n = size(time_series_data.three_d_sorted, 1);
+    m = size(time_series_data.three_d_sorted{1, 2, 1}, 2) - 1; %Division in the sorting process left 1 extra data point, so we remove it
+    N = size(time_series_data.three_d_sorted, 3);
+    X = zeros(n, m, N);
     
-    for i = 1:n
-            X(i, :) = time_series_data.(time_series_names{i});
+    for k = 1:N
+        for i = 1:n
+            if size(time_series_data.three_d_sorted{i, 2, k},2) > m
+                for j = 1:(size(time_series_data.three_d_sorted{i, 2, k},2) - m)
+                    time_series_data.three_d_sorted{i, 2, k}(end) = [];
+                end
+            end
+            X(i, :, k) = normalize(detrend(time_series_data.three_d_sorted{i, 2, k}, 'constant'), 'scale');
+            
+        end
     end
 
-    % Detrend and normalize data
-    X_detrended = detrend(X', 'constant')';
-    X_normalized = normalize(X_detrended', 'scale')';
+    X_normalized = X;
 
-    [X_normalized, p_max] = fix_pdef_matrix(X_normalized, p_max, 1e-6);
+%     % Detrend and normalize data
+%     X_detrended = detrend(X', 'constant')';
+%     X_normalized = normalize(X_detrended', 'scale')';
+
+%     [X_normalized, p_max] = fix_pdef_matrix(X, p_max, 1e-6);
 
     % Choose model order
     [AIC, BIC, moaic, mobic] = tsdata_to_infocrit(X_normalized, p_max);
