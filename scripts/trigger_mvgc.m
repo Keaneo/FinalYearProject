@@ -1,10 +1,12 @@
-function trigger_mvgc(rootDir, sessionIndx)
+function trigger_mvgc(rootDir, sessionIndx, filename)
 
     %Load Session from Steinmetz dataset
     [s, sessionName] = load_session(rootDir, sessionIndx);
 
     % Load the sorted data
-    filename = strcat('processed/spike_times_three_d', sessionName, 'RESPONSE.mat');
+    if nargin < 3
+        filename = strcat('processed/spike_times_three_d', sessionName, 'RESPONSE.mat');
+    end
     three_d_sorted = load(filename, "three_d_sorted");
 
     % Setup parameters for F-test
@@ -27,8 +29,8 @@ function trigger_mvgc(rootDir, sessionIndx)
     plot_coloured_matrix(F, significant_values, [1, 0, 0], [0, 0, 1], 0, region_names, flip(region_names), alpha);
 
     % Save an image of the graph and the GC matrix
-    save(strcat('processed/pvalues/pval', sessionName ,'.mat'), "F");    
-    saveas(gcf, strcat('graphs/', sessionName, 'RESPONSE.png'));
+    %save(strcat('processed/pvalues/pval', sessionName ,'.mat'), "F");    
+    saveas(gcf, strcat('graphs/', sessionName, '.png'));
 
     % Export for Excel
     %writematrix(significant_values, strcat('processed/excel/', sessionName ,'sigValuesRESPONSE.xls'))
