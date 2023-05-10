@@ -4,8 +4,7 @@ function [pvalues, F, time_series_names] = mvgc_analysis(time_series_data, p_max
     % p_max: Maximum model order to consider for VAR model selection
     % alpha: Significance level for the permutation test (e.g., 0.05)
     % nperms: Number of permutations for the significance testing
-
-    time_series_data.three_d_sorted{1, 1, 1}
+    time_series_data.three_d_sorted{1, 1, 1};
 
     % Find rows with NaN elements & remove them     
     fields = time_series_data.three_d_sorted(:, 1, 1);
@@ -20,7 +19,7 @@ function [pvalues, F, time_series_names] = mvgc_analysis(time_series_data, p_max
     end
 
     % Convert struct to a 2D matrix
-    time_series_names = time_series_data.three_d_sorted(:, 1, 1)
+    time_series_names = time_series_data.three_d_sorted(:, 1, 1);
     n = size(time_series_data.three_d_sorted, 1);
     m = size(time_series_data.three_d_sorted{1, 2, 1}, 2) - 1; %Division in the sorting process left 1 extra data point, so we remove it
     N = size(time_series_data.three_d_sorted, 3);
@@ -73,7 +72,5 @@ function [pvalues, F, time_series_names] = mvgc_analysis(time_series_data, p_max
 %             end
 %         end
 %     end
-
-
     
 end

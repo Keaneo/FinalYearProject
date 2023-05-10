@@ -8,7 +8,7 @@ function plot_coloured_matrix(mvgcMatrix, sigMatrix, minColor, maxColor, ignoreV
     normalizedMatrix = (mvgcMatrix - minValue) / (maxValue - minValue);
 
     % Create a figure and axes for the plot
-    figure;
+    figure('Position', [100, 100, 800, 820]);
     ax = axes;
 
     % Create grid of colored squares
@@ -20,11 +20,12 @@ function plot_coloured_matrix(mvgcMatrix, sigMatrix, minColor, maxColor, ignoreV
                 rectangle(ax, 'Position', [col, rows - row + 1, 1, 1], ...
                              'FaceColor', [0.5 0.5 0.5], ...
                              'EdgeColor', 'none');
-            else if sigMatrix(row, col)
-                rectangle(ax, 'Position', [col, rows - row + 1, 1, 1], ...
-                            'FaceColor', [0 1 0], ...
-                            'EdgeColor', 'none');
-                text(ax, col+0.5, rows-rows+0.5, num2str(sigMatrix(row, col)));
+                
+%             elseif sigMatrix(row, col)
+%                 rectangle(ax, 'Position', [col, rows - row + 1, 1, 1], ...
+%                             'FaceColor', [0 1 0], ...
+%                             'EdgeColor', 'none');
+%                 text(ax, col+0.5, rows-rows+0.5, num2str(sigMatrix(row, col)));
             else
                 % Interpolate between minColor and maxColor
                 color = minColor + normalizedMatrix(row, col) * (maxColor - minColor);
@@ -32,6 +33,7 @@ function plot_coloured_matrix(mvgcMatrix, sigMatrix, minColor, maxColor, ignoreV
                 rectangle(ax, 'Position', [col, rows - row + 1, 1, 1], ...
                              'FaceColor', color, ...
                              'EdgeColor', 'none');
+                text(row + 0.5, cols - (col - 1.5), 1, string(sigMatrix(col, row)),"HorizontalAlignment", 'center','VerticalAlignment', 'middle')
             end
         end
     end
@@ -41,15 +43,21 @@ function plot_coloured_matrix(mvgcMatrix, sigMatrix, minColor, maxColor, ignoreV
     ax.YDir = 'normal';
     % Add x-axis labels
     for col = 1:cols
-        text(col + 0.5, 0.9, columnLabels{col}, 'HorizontalAlignment', 'center', ...
-             'VerticalAlignment', 'top', 'Rotation', 90);
+        text(col + 0.5, 0.8, columnLabels{col}, 'HorizontalAlignment', 'center', ...
+             'VerticalAlignment', 'top');
     end
-    
+
+    xlab = xlabel('To');
+    xlab.Position(2) = xlab.Position(2) - 0.2;  
+
     % Add y-axis labels
     for row = 1:rows
         text(0.9, row + 0.5, rowLabels{row}, 'HorizontalAlignment', 'right', ...
              'VerticalAlignment', 'middle');
     end
+
+    ylab = ylabel('From');
+    ylab.Position(1) = ylab.Position(1) - 0.2;
 
     axis equal tight;
     box on;

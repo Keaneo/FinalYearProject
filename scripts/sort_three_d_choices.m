@@ -1,4 +1,4 @@
-function three_d_sorted = sort_three_d_outcomes(s, anatData, session_name, bin_size, outcome, lock)
+function three_d_sorted = sort_three_d_choices(s, anatData, session_name, bin_size, choice, lock, correct, folder_name)
     % Sorts spikes by brain region and averages into a 3d matrix for mvgc
     unique_brain_regions = unique(anatData.borders.acronym);
 
@@ -8,16 +8,18 @@ function three_d_sorted = sort_three_d_outcomes(s, anatData, session_name, bin_s
     end
 
     % Get outcome as string 
-    if outcome
-        outcome_name = "CORRECT";
+    if choice == 1
+        choice_name = "_left";
+    elseif choice == 0
+        choice_name = "_nogo";
     else
-        outcome_name = "INCORRECT";
+        choice_name = "_right";
     end
 
     % Setup filenames
     split_region_file = strcat('processed/spike_times_by_region', session_name, '.mat');
-    filename = strcat('processed/spike_times_three_d', session_name, lock, outcome_name,  '.mat');
-
+    filename = strcat('processed/', 'spike_times_three_d', session_name, lock, choice_name, correct,  '.mat');
+        
     % Save relevant information to variables
     stimOn = s.trials.visualStim_times;
     outcomes = s.trials.response_choice;
@@ -26,25 +28,24 @@ function three_d_sorted = sort_three_d_outcomes(s, anatData, session_name, bin_s
     contRight = s.trials.visualStim_contrastRight;
     
     % This creates a list of correct or incorrect choices
-    choices = zeros(length(stimOn), 1);
+    correct_choices = zeros(length(stimOn), 1);
     for i = 1:length(stimOn)
         if contLeft(i) > contRight(i)
             % correct right
-            choices(i) = (outcomes(i) == 1);
+            correct_choices(i) = -1;
         elseif contLeft(i) < contRight(i)
             % correct left
-            choices(i) = (outcomes(i) == -1);
+            correct_choices(i) = 1;
         elseif contLeft(i) == contRight(i)
             % correct no-go
-            choices(i) = (outcomes(i) == 0);
+            correct_choices(i) = 0;
         end
     end
 
-    disp(numel(stimOn(choices == outcome)))
-    disp(numel(stimOn(choices ~= outcome)))
-    disp(numel(stimOn))
 
-
+%     disp(numel(stimOn(correct_choices == outcome)))
+%     disp(numel(stimOn(correct_choices ~= outcome)))
+%     disp(numel(stimOn))
 
 
     % Check if the spikes are already sorted
@@ -62,8 +63,14 @@ function three_d_sorted = sort_three_d_outcomes(s, anatData, session_name, bin_s
         end
 
         % Init empty cell array of (region count) X (2) X (trial count)
-        data_cell = cell(numel(unique_brain_regions), 2, numel(stimOn(choices == outcome)));
-        
+        if strcmp(correct, 'CORRECT')
+            data_cell = cell(numel(unique_brain_regions), 2, numel(stimOn((correct_choices == choice) & (outcomes == choice))));
+            numel(stimOn((correct_choices == choice) & (outcomes == choice)))
+        elseif strcmp(correct, 'INCORRECT')
+            data_cell = cell(numel(unique_brain_regions), 2, numel(stimOn((correct_choices ~= choice) & (outcomes == choice))));
+            numel(stimOn((correct_choices ~= choice) & (outcomes == choice)))
+        end
+
         tic % For measuring time        
         
         % Track how many we skipped to keep number of trials consistent in
@@ -72,9 +79,16 @@ function three_d_sorted = sort_three_d_outcomes(s, anatData, session_name, bin_s
 
         % Loop each trial
         for trial_idx = 1:numel(stimOn)
-            if choices(trial_idx) ~= outcome
-                skipped = skipped + 1;
-                continue
+            if strcmp(correct, 'INCORRECT') & outcomes(trial_idx) == choice
+                if correct_choices(trial_idx) == choice
+                    skipped = skipped + 1;
+                    continue
+                end
+            elseif strcmp(correct, 'CORRECT') & outcomes(trial_idx) == choice
+                if correct_choices(trial_idx) ~= choice
+                    skipped = skipped + 1;
+                    continue
+                end
             end
             % Loop each region
             for region_idx = 1:numel(unique_brain_regions)

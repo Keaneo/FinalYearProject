@@ -15,12 +15,12 @@ function brain_region_spike_times = sort_spikes_with_outcome(s, anatData, sessio
         if contLeft(i) > contRight(i)
             % correct right
             choices(i) = (outcomes(i) == 1);
-        elseif contLeft(i) < contRight(i)
-            % correct left
-            choices(i) = (outcomes(i) == -1);
-        elseif contLeft(i) == contRight(i)
-            % correct no-go
-            choices(i) = (outcomes(i) == 0);
+%         elseif contLeft(i) < contRight(i)
+%             % correct left
+%             choices(i) = (outcomes(i) == -1);
+%         elseif contLeft(i) == contRight(i)
+%             % correct no-go
+%             choices(i) = (outcomes(i) == 0);
         end
     end
 
