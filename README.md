@@ -2,6 +2,7 @@
 
 For the full version including data & graphs the zip folder is here:
 https://drive.google.com/file/d/1GXm12UNW9_JrdzjheDVfAUi4W4favamg/view?usp=sharing
+Download is 11.1GB
 
 # Usage
 Files in the 'scripts' folder are the relevant code files.  
